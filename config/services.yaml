@@ -20,5 +20,14 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Command\GenerateEntitiesCommand:
+        tags: [ console.command ]
+
+    App\Command\GenerateRepositoriesCommand:
+        tags: [ console.command ]
+
+    Symfony\Component\Finder\Finder:
+        class: Symfony\Component\Finder\Finder
+        public: false
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
