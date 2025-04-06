@@ -3,91 +3,106 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-use App\Entity\Tournois;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Performanceequipe
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "performanceequipes")]
-    #[ORM\JoinColumn(name: 'equipe_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Equipe $equipe_id;
+    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "performances")]
+    #[ORM\JoinColumn(name: "equipe_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    #[Assert\NotNull(message: "L'équipe est obligatoire")]
+    private ?Equipe $equipe = null;
 
-        #[ORM\ManyToOne(targetEntity: Tournois::class, inversedBy: "performanceequipes")]
-    #[ORM\JoinColumn(name: 'tournois_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Tournois $tournois_id;
-
-    #[ORM\Column(type: "integer")]
-    private int $victoires;
-
-    #[ORM\Column(type: "integer")]
-    private int $pertes;
+    #[ORM\ManyToOne(targetEntity: Tournois::class, inversedBy: "performancesEquipes")]
+    #[ORM\JoinColumn(name: "tournois_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    #[Assert\NotNull(message: "Le tournois est obligatoire")]
+    private ?Tournois $tournois = null;
 
     #[ORM\Column(type: "integer")]
-    private int $rang;
+    #[Assert\NotNull(message: "Le nombre de victoires est obligatoire")]
+    #[Assert\GreaterThanOrEqual(0, message: "Le nombre de victoires ne peut pas être négatif")]
+    private int $victoires = 0;
 
-    public function getId()
+    #[ORM\Column(type: "integer")]
+    #[Assert\NotNull(message: "Le nombre de pertes est obligatoire")]
+    #[Assert\GreaterThanOrEqual(0, message: "Le nombre de pertes ne peut pas être négatif")]
+    private int $pertes = 0;
+
+    #[ORM\Column(type: "integer")]
+    #[Assert\NotNull(message: "Le rang est obligatoire")]
+    #[Assert\Positive(message: "Le rang doit être un nombre positif")]
+    private int $rang = 1;
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function getEquipe(): ?Equipe
     {
-        $this->id = $value;
+        return $this->equipe;
     }
 
-    public function getEquipe_id()
+    public function setEquipe(?Equipe $equipe): self
     {
-        return $this->equipe_id;
+        $this->equipe = $equipe;
+        return $this;
     }
 
-    public function setEquipe_id($value)
+    public function getTournois(): ?Tournois
     {
-        $this->equipe_id = $value;
+        return $this->tournois;
     }
 
-    public function getTournois_id()
+    public function setTournois(?Tournois $tournois): self
     {
-        return $this->tournois_id;
+        $this->tournois = $tournois;
+        return $this;
     }
 
-    public function setTournois_id($value)
-    {
-        $this->tournois_id = $value;
-    }
-
-    public function getVictoires()
+    public function getVictoires(): int
     {
         return $this->victoires;
     }
 
-    public function setVictoires($value)
+    public function setVictoires(int $victoires): self
     {
-        $this->victoires = $value;
+        $this->victoires = $victoires;
+        return $this;
     }
 
-    public function getPertes()
+    public function getPertes(): int
     {
         return $this->pertes;
     }
 
-    public function setPertes($value)
+    public function setPertes(int $pertes): self
     {
-        $this->pertes = $value;
+        $this->pertes = $pertes;
+        return $this;
     }
 
-    public function getRang()
+    public function getRang(): int
     {
         return $this->rang;
     }
 
-    public function setRang($value)
+    public function setRang(int $rang): self
     {
-        $this->rang = $value;
+        $this->rang = $rang;
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf('Performance de %s au tournoi %s',
+            $this->equipe ? $this->equipe->getNom() : '?',
+            $this->tournois ? $this->tournois->getNom() : '?'
+        );
     }
 }

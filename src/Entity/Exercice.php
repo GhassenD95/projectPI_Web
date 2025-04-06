@@ -3,133 +3,149 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Doctrine\Common\Collections\Collection;
-use App\Entity\Exercice_entrainment;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\ExerciceRepository")]
 class Exercice
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Le nom de l'exercice est obligatoire")]
     private string $nom;
 
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: "string", length: 50)]
+    #[Assert\NotBlank(message: "Le type d'exercice est obligatoire")]
     private string $typeExercice;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\Positive(message: "La durée doit être positive")]
     private int $dureeMinutes;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\PositiveOrZero(message: "Le nombre de sets doit être positif ou zéro")]
     private int $sets;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\PositiveOrZero(message: "Le nombre de répétitions doit être positif ou zéro")]
     private int $reps;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private string $image_url;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $imageUrl = null;
 
-    public function getId()
+    #[ORM\OneToMany(mappedBy: "exercice", targetEntity: ExerciceEntrainment::class, orphanRemoval: true)]
+    private Collection $exerciceEntrainments;
+
+    public function __construct()
+    {
+        $this->exerciceEntrainments = new ArrayCollection();
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
-    {
-        $this->id = $value;
-    }
-
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
-    public function setNom($value)
+    public function setNom(string $nom): self
     {
-        $this->nom = $value;
+        $this->nom = $nom;
+        return $this;
     }
 
-    public function getTypeExercice()
+    public function getTypeExercice(): string
     {
         return $this->typeExercice;
     }
 
-    public function setTypeExercice($value)
+    public function setTypeExercice(string $typeExercice): self
     {
-        $this->typeExercice = $value;
+        $this->typeExercice = $typeExercice;
+        return $this;
     }
 
-    public function getDureeMinutes()
+    public function getDureeMinutes(): int
     {
         return $this->dureeMinutes;
     }
 
-    public function setDureeMinutes($value)
+    public function setDureeMinutes(int $dureeMinutes): self
     {
-        $this->dureeMinutes = $value;
+        $this->dureeMinutes = $dureeMinutes;
+        return $this;
     }
 
-    public function getSets()
+    public function getSets(): int
     {
         return $this->sets;
     }
 
-    public function setSets($value)
+    public function setSets(int $sets): self
     {
-        $this->sets = $value;
+        $this->sets = $sets;
+        return $this;
     }
 
-    public function getReps()
+    public function getReps(): int
     {
         return $this->reps;
     }
 
-    public function setReps($value)
+    public function setReps(int $reps): self
     {
-        $this->reps = $value;
+        $this->reps = $reps;
+        return $this;
     }
 
-    public function getImage_url()
+    public function getImageUrl(): ?string
     {
-        return $this->image_url;
+        return $this->imageUrl;
     }
 
-    public function setImage_url($value)
+    public function setImageUrl(?string $imageUrl): self
     {
-        $this->image_url = $value;
+        $this->imageUrl = $imageUrl;
+        return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "exercice_id", targetEntity: Exercice_entrainment::class)]
-    private Collection $exercice_entrainments;
+    /**
+     * @return Collection<int, ExerciceEntrainment>
+     */
+    public function getExerciceEntrainments(): Collection
+    {
+        return $this->exerciceEntrainments;
+    }
 
-        public function getExercice_entrainments(): Collection
-        {
-            return $this->exercice_entrainments;
+    public function addExerciceEntrainment(ExerciceEntrainment $exerciceEntrainment): self
+    {
+        if (!$this->exerciceEntrainments->contains($exerciceEntrainment)) {
+            $this->exerciceEntrainments->add($exerciceEntrainment);
+            $exerciceEntrainment->setExercice($this);
         }
-    
-        public function addExercice_entrainment(Exercice_entrainment $exercice_entrainment): self
-        {
-            if (!$this->exercice_entrainments->contains($exercice_entrainment)) {
-                $this->exercice_entrainments[] = $exercice_entrainment;
-                $exercice_entrainment->setExercice_id($this);
+        return $this;
+    }
+
+    public function removeExerciceEntrainment(ExerciceEntrainment $exerciceEntrainment): self
+    {
+        if ($this->exerciceEntrainments->removeElement($exerciceEntrainment)) {
+            if ($exerciceEntrainment->getExercice() === $this) {
+                $exerciceEntrainment->setExercice(null);
             }
-    
-            return $this;
         }
-    
-        public function removeExercice_entrainment(Exercice_entrainment $exercice_entrainment): self
-        {
-            if ($this->exercice_entrainments->removeElement($exercice_entrainment)) {
-                // set the owning side to null (unless already changed)
-                if ($exercice_entrainment->getExercice_id() === $this) {
-                    $exercice_entrainment->setExercice_id(null);
-                }
-            }
-    
-            return $this;
-        }
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
+    }
 }

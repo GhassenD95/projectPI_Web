@@ -3,124 +3,209 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-use App\Entity\Utilisateur;
 use Doctrine\Common\Collections\Collection;
-use App\Entity\Equipement;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\InstallationsportiveRepository")]
 class Installationsportive
 {
+    public const TYPE_STADE = 'STADE';
+    public const TYPE_SALLE_GYM = 'SALLE_GYM';
+    public const TYPE_TERRAIN = 'TERRAIN';
+    public const TYPE_PISCINE = 'PISCINE';
 
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "installationsportives")]
-    #[ORM\JoinColumn(name: 'manager_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Utilisateur $manager_id;
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "installationsGerees")]
+    #[ORM\JoinColumn(name: "manager_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
+    private ?Utilisateur $manager = null;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private string $nom;
 
-    #[ORM\Column(type: "string")]
-    private string $typeInstallation;
+    #[ORM\Column(type: "string", length: 20, columnDefinition: "ENUM('STADE', 'SALLE_GYM', 'TERRAIN', 'PISCINE')")]
+    private string $typeInstallation = self::TYPE_STADE;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private string $adresse;
 
     #[ORM\Column(type: "integer")]
-    private int $capacite;
+    #[Assert\PositiveOrZero]
+    private int $capacite = 0;
 
     #[ORM\Column(type: "boolean")]
-    private bool $isDisponible;
+    private bool $isDisponible = true;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private string $image_url;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[Assert\Url]
+    private ?string $imageUrl = null;
 
-    public function getId()
+    #[ORM\OneToMany(mappedBy: "installationSportive", targetEntity: Equipement::class, orphanRemoval: true)]
+    private Collection $equipements;
+
+    #[ORM\OneToMany(mappedBy: "installationSportive", targetEntity: Entrainment::class)]
+    private Collection $entrainements;
+
+    public function __construct()
+    {
+        $this->equipements = new ArrayCollection();
+        $this->entrainements = new ArrayCollection();
+    }
+
+    // Getters and Setters
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function getManager(): ?Utilisateur
     {
-        $this->id = $value;
+        return $this->manager;
     }
 
-    public function getManager_id()
+    public function setManager(?Utilisateur $manager): self
     {
-        return $this->manager_id;
+        $this->manager = $manager;
+        return $this;
     }
 
-    public function setManager_id($value)
-    {
-        $this->manager_id = $value;
-    }
-
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
-    public function setNom($value)
+    public function setNom(string $nom): self
     {
-        $this->nom = $value;
+        $this->nom = $nom;
+        return $this;
     }
 
-    public function getTypeInstallation()
+    public function getTypeInstallation(): string
     {
         return $this->typeInstallation;
     }
 
-    public function setTypeInstallation($value)
+    public function setTypeInstallation(string $typeInstallation): self
     {
-        $this->typeInstallation = $value;
+        $validTypes = [self::TYPE_STADE, self::TYPE_SALLE_GYM, self::TYPE_TERRAIN, self::TYPE_PISCINE];
+        if (!in_array($typeInstallation, $validTypes)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Invalid installation type. Valid types are: %s',
+                implode(', ', $validTypes)
+            ));
+        }
+        $this->typeInstallation = $typeInstallation;
+        return $this;
     }
 
-    public function getAdresse()
+    public function getAdresse(): string
     {
         return $this->adresse;
     }
 
-    public function setAdresse($value)
+    public function setAdresse(string $adresse): self
     {
-        $this->adresse = $value;
+        $this->adresse = $adresse;
+        return $this;
     }
 
-    public function getCapacite()
+    public function getCapacite(): int
     {
         return $this->capacite;
     }
 
-    public function setCapacite($value)
+    public function setCapacite(int $capacite): self
     {
-        $this->capacite = $value;
+        $this->capacite = $capacite;
+        return $this;
     }
 
-    public function getIsDisponible()
+    public function isDisponible(): bool
     {
         return $this->isDisponible;
     }
 
-    public function setIsDisponible($value)
+    public function setIsDisponible(bool $isDisponible): self
     {
-        $this->isDisponible = $value;
+        $this->isDisponible = $isDisponible;
+        return $this;
     }
 
-    public function getImage_url()
+    public function getImageUrl(): ?string
     {
-        return $this->image_url;
+        return $this->imageUrl;
     }
 
-    public function setImage_url($value)
+    public function setImageUrl(?string $imageUrl): self
     {
-        $this->image_url = $value;
+        $this->imageUrl = $imageUrl;
+        return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "installationSportive_id", targetEntity: Equipement::class)]
-    private Collection $equipements;
+    /**
+     * @return Collection<int, Equipement>
+     */
+    public function getEquipements(): Collection
+    {
+        return $this->equipements;
+    }
 
-    #[ORM\OneToMany(mappedBy: "installationSportive_id", targetEntity: Entrainment::class)]
-    private Collection $entrainments;
+    public function addEquipement(Equipement $equipement): self
+    {
+        if (!$this->equipements->contains($equipement)) {
+            $this->equipements->add($equipement);
+            $equipement->setInstallationSportive($this);
+        }
+        return $this;
+    }
+
+    public function removeEquipement(Equipement $equipement): self
+    {
+        if ($this->equipements->removeElement($equipement)) {
+            if ($equipement->getInstallationSportive() === $this) {
+                $equipement->setInstallationSportive(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Entrainment>
+     */
+    public function getEntrainements(): Collection
+    {
+        return $this->entrainements;
+    }
+
+    public function addEntrainement(Entrainment $entrainement): self
+    {
+        if (!$this->entrainements->contains($entrainement)) {
+            $this->entrainements->add($entrainement);
+            $entrainement->setInstallationSportive($this);
+        }
+        return $this;
+    }
+
+    public function removeEntrainement(Entrainment $entrainement): self
+    {
+        if ($this->entrainements->removeElement($entrainement)) {
+            if ($entrainement->getInstallationSportive() === $this) {
+                $entrainement->setInstallationSportive(null);
+            }
+        }
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom;
+    }
 }

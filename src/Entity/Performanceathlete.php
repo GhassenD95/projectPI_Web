@@ -3,169 +3,175 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use App\Entity\Utilisateur;
 use App\Entity\Matchsportif;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\PerformanceathleteRepository")]
 class Performanceathlete
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "performanceathletes")]
-    #[ORM\JoinColumn(name: 'athlete_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Utilisateur $athlete_id;
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "performancesAthlete")]
+    #[ORM\JoinColumn(name: "athlete_id", referencedColumnName: "id", nullable: false)]
+    private ?Utilisateur $athlete = null;
 
-        #[ORM\ManyToOne(targetEntity: Matchsportif::class, inversedBy: "performanceathletes")]
-    #[ORM\JoinColumn(name: 'match_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Matchsportif $match_id;
+    #[ORM\ManyToOne(targetEntity: Matchsportif::class, inversedBy: "performances")]
+    #[ORM\JoinColumn(name: "match_id", referencedColumnName: "id", nullable: false)]
+    private ?Matchsportif $match = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $minutesJouees;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $minutesJouees = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $buts;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $buts = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $passesDecisives;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $passesDecisives = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $tirs;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $tirs = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $interceptions;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $interceptions = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $fautes;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $fautes = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $cartonsJaunes;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $cartonsJaunes = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $cartonsRouges;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $cartonsRouges = null;
 
-    #[ORM\Column(type: "integer")]
-    private int $rebonds;
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $rebonds = null;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function getAthlete(): ?Utilisateur
     {
-        $this->id = $value;
+        return $this->athlete;
     }
 
-    public function getAthlete_id()
+    public function setAthlete(?Utilisateur $athlete): self
     {
-        return $this->athlete_id;
+        $this->athlete = $athlete;
+        return $this;
     }
 
-    public function setAthlete_id($value)
+    public function getMatch(): ?Matchsportif
     {
-        $this->athlete_id = $value;
+        return $this->match;
     }
 
-    public function getMatch_id()
+    public function setMatch(?Matchsportif $match): self
     {
-        return $this->match_id;
+        $this->match = $match;
+        return $this;
     }
 
-    public function setMatch_id($value)
-    {
-        $this->match_id = $value;
-    }
-
-    public function getMinutesJouees()
+    public function getMinutesJouees(): ?int
     {
         return $this->minutesJouees;
     }
 
-    public function setMinutesJouees($value)
+    public function setMinutesJouees(?int $minutesJouees): self
     {
-        $this->minutesJouees = $value;
+        $this->minutesJouees = $minutesJouees;
+        return $this;
     }
 
-    public function getButs()
+    public function getButs(): ?int
     {
         return $this->buts;
     }
 
-    public function setButs($value)
+    public function setButs(?int $buts): self
     {
-        $this->buts = $value;
+        $this->buts = $buts;
+        return $this;
     }
 
-    public function getPassesDecisives()
+    public function getPassesDecisives(): ?int
     {
         return $this->passesDecisives;
     }
 
-    public function setPassesDecisives($value)
+    public function setPassesDecisives(?int $passesDecisives): self
     {
-        $this->passesDecisives = $value;
+        $this->passesDecisives = $passesDecisives;
+        return $this;
     }
 
-    public function getTirs()
+    public function getTirs(): ?int
     {
         return $this->tirs;
     }
 
-    public function setTirs($value)
+    public function setTirs(?int $tirs): self
     {
-        $this->tirs = $value;
+        $this->tirs = $tirs;
+        return $this;
     }
 
-    public function getInterceptions()
+    public function getInterceptions(): ?int
     {
         return $this->interceptions;
     }
 
-    public function setInterceptions($value)
+    public function setInterceptions(?int $interceptions): self
     {
-        $this->interceptions = $value;
+        $this->interceptions = $interceptions;
+        return $this;
     }
 
-    public function getFautes()
+    public function getFautes(): ?int
     {
         return $this->fautes;
     }
 
-    public function setFautes($value)
+    public function setFautes(?int $fautes): self
     {
-        $this->fautes = $value;
+        $this->fautes = $fautes;
+        return $this;
     }
 
-    public function getCartonsJaunes()
+    public function getCartonsJaunes(): ?int
     {
         return $this->cartonsJaunes;
     }
 
-    public function setCartonsJaunes($value)
+    public function setCartonsJaunes(?int $cartonsJaunes): self
     {
-        $this->cartonsJaunes = $value;
+        $this->cartonsJaunes = $cartonsJaunes;
+        return $this;
     }
 
-    public function getCartonsRouges()
+    public function getCartonsRouges(): ?int
     {
         return $this->cartonsRouges;
     }
 
-    public function setCartonsRouges($value)
+    public function setCartonsRouges(?int $cartonsRouges): self
     {
-        $this->cartonsRouges = $value;
+        $this->cartonsRouges = $cartonsRouges;
+        return $this;
     }
 
-    public function getRebonds()
+    public function getRebonds(): ?int
     {
         return $this->rebonds;
     }
 
-    public function setRebonds($value)
+    public function setRebonds(?int $rebonds): self
     {
-        $this->rebonds = $value;
+        $this->rebonds = $rebonds;
+        return $this;
     }
 }

@@ -3,22 +3,21 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Utilisateur;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\BlessureRepository")]
 class Blessure
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "blessures")]
-    #[ORM\JoinColumn(name: 'athlete_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Utilisateur $athlete_id;
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "blessures")]
+    #[ORM\JoinColumn(name: "athlete_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    private ?Utilisateur $athlete = null;
 
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: "string", length: 255)]
     private string $typeBlessure;
 
     #[ORM\Column(type: "string", length: 255)]
@@ -30,63 +29,70 @@ class Blessure
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $dateReprise;
 
-    public function getId()
+    // Getters and Setters
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function getAthlete(): ?Utilisateur
     {
-        $this->id = $value;
+        return $this->athlete;
     }
 
-    public function getAthlete_id()
+    public function setAthlete(?Utilisateur $athlete): self
     {
-        return $this->athlete_id;
+        $this->athlete = $athlete;
+        return $this;
     }
 
-    public function setAthlete_id($value)
-    {
-        $this->athlete_id = $value;
-    }
-
-    public function getTypeBlessure()
+    public function getTypeBlessure(): string
     {
         return $this->typeBlessure;
     }
 
-    public function setTypeBlessure($value)
+    public function setTypeBlessure(string $typeBlessure): self
     {
-        $this->typeBlessure = $value;
+        $this->typeBlessure = $typeBlessure;
+        return $this;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription($value)
+    public function setDescription(string $description): self
     {
-        $this->description = $value;
+        $this->description = $description;
+        return $this;
     }
 
-    public function getDateBlessure()
+    public function getDateBlessure(): \DateTimeInterface
     {
         return $this->dateBlessure;
     }
 
-    public function setDateBlessure($value)
+    public function setDateBlessure(\DateTimeInterface $dateBlessure): self
     {
-        $this->dateBlessure = $value;
+        $this->dateBlessure = $dateBlessure;
+        return $this;
     }
 
-    public function getDateReprise()
+    public function getDateReprise(): \DateTimeInterface
     {
         return $this->dateReprise;
     }
 
-    public function setDateReprise($value)
+    public function setDateReprise(\DateTimeInterface $dateReprise): self
     {
-        $this->dateReprise = $value;
+        $this->dateReprise = $dateReprise;
+        return $this;
+    }
+
+    // Optional: Add __toString() for better display
+    public function __toString(): string
+    {
+        return $this->typeBlessure . ' (' . $this->dateBlessure->format('Y-m-d') . ')';
     }
 }

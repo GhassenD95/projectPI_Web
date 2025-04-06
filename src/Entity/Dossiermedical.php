@@ -3,20 +3,19 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Utilisateur;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\DossiermedicalRepository")]
 class Dossiermedical
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "dossiermedicals")]
-    #[ORM\JoinColumn(name: 'athlete_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Utilisateur $athlete_id;
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: "dossiersMedicaux")]
+    #[ORM\JoinColumn(name: "athlete_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    private ?Utilisateur $athlete = null;
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $dernierCheckup;
@@ -27,79 +26,87 @@ class Dossiermedical
     #[ORM\Column(type: "string", length: 255)]
     private string $vaccinations;
 
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: "string", length: 255)]
     private string $etatAthlete;
 
     #[ORM\Column(type: "string", length: 255)]
     private string $description;
 
-    public function getId()
+    // Getters and Setters
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function getAthlete(): ?Utilisateur
     {
-        $this->id = $value;
+        return $this->athlete;
     }
 
-    public function getAthlete_id()
+    public function setAthlete(?Utilisateur $athlete): self
     {
-        return $this->athlete_id;
+        $this->athlete = $athlete;
+        return $this;
     }
 
-    public function setAthlete_id($value)
-    {
-        $this->athlete_id = $value;
-    }
-
-    public function getDernierCheckup()
+    public function getDernierCheckup(): \DateTimeInterface
     {
         return $this->dernierCheckup;
     }
 
-    public function setDernierCheckup($value)
+    public function setDernierCheckup(\DateTimeInterface $dernierCheckup): self
     {
-        $this->dernierCheckup = $value;
+        $this->dernierCheckup = $dernierCheckup;
+        return $this;
     }
 
-    public function getAllergies()
+    public function getAllergies(): string
     {
         return $this->allergies;
     }
 
-    public function setAllergies($value)
+    public function setAllergies(string $allergies): self
     {
-        $this->allergies = $value;
+        $this->allergies = $allergies;
+        return $this;
     }
 
-    public function getVaccinations()
+    public function getVaccinations(): string
     {
         return $this->vaccinations;
     }
 
-    public function setVaccinations($value)
+    public function setVaccinations(string $vaccinations): self
     {
-        $this->vaccinations = $value;
+        $this->vaccinations = $vaccinations;
+        return $this;
     }
 
-    public function getEtatAthlete()
+    public function getEtatAthlete(): string
     {
         return $this->etatAthlete;
     }
 
-    public function setEtatAthlete($value)
+    public function setEtatAthlete(string $etatAthlete): self
     {
-        $this->etatAthlete = $value;
+        $this->etatAthlete = $etatAthlete;
+        return $this;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription($value)
+    public function setDescription(string $description): self
     {
-        $this->description = $value;
+        $this->description = $description;
+        return $this;
+    }
+
+    // Optional: Add __toString() for better display
+    public function __toString(): string
+    {
+        return 'Dossier médical #' . $this->id . ' - ' . $this->athlete;
     }
 }

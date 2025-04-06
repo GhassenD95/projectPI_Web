@@ -3,30 +3,27 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-use App\Entity\Equipe;
 use Doctrine\Common\Collections\Collection;
-use App\Entity\Performanceathlete;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity]
 class Matchsportif
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Tournois::class, inversedBy: "matchsportifs")]
-    #[ORM\JoinColumn(name: 'tournois_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Tournois $tournois_id;
+    #[ORM\ManyToOne(targetEntity: Tournois::class, inversedBy: "matchs")]
+    #[ORM\JoinColumn(name: "tournois_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    private ?Tournois $tournois = null;
 
-        #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "matchsportifs")]
-    #[ORM\JoinColumn(name: 'equipe1_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Equipe $equipe1_id;
+    // In Matchsportif.php
+    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "matchsAsTeam1")]
+    private ?Equipe $equipe1 = null;
 
-        #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "matchsportifs")]
-    #[ORM\JoinColumn(name: 'equipe2_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Equipe $equipe2_id;
+    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "matchsAsTeam2")]
+    private ?Equipe $equipe2 = null;
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $date;
@@ -34,66 +31,108 @@ class Matchsportif
     #[ORM\Column(type: "string", length: 255)]
     private string $lieu;
 
-    public function getId()
+    #[ORM\OneToMany(mappedBy: "match", targetEntity: Performanceathlete::class)]
+    private Collection $performances;
+
+    public function __construct()
+    {
+        $this->performances = new ArrayCollection();
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function getTournois(): ?Tournois
     {
-        $this->id = $value;
+        return $this->tournois;
     }
 
-    public function getTournois_id()
+    public function setTournois(?Tournois $tournois): self
     {
-        return $this->tournois_id;
+        $this->tournois = $tournois;
+        return $this;
     }
 
-    public function setTournois_id($value)
+    public function getEquipe1(): ?Equipe
     {
-        $this->tournois_id = $value;
+        return $this->equipe1;
     }
 
-    public function getEquipe1_id()
+    public function setEquipe1(?Equipe $equipe1): self
     {
-        return $this->equipe1_id;
+        $this->equipe1 = $equipe1;
+        return $this;
     }
 
-    public function setEquipe1_id($value)
+    public function getEquipe2(): ?Equipe
     {
-        $this->equipe1_id = $value;
+        return $this->equipe2;
     }
 
-    public function getEquipe2_id()
+    public function setEquipe2(?Equipe $equipe2): self
     {
-        return $this->equipe2_id;
+        $this->equipe2 = $equipe2;
+        return $this;
     }
 
-    public function setEquipe2_id($value)
-    {
-        $this->equipe2_id = $value;
-    }
-
-    public function getDate()
+    public function getDate(): \DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate($value)
+    public function setDate(\DateTimeInterface $date): self
     {
-        $this->date = $value;
+        $this->date = $date;
+        return $this;
     }
 
-    public function getLieu()
+    public function getLieu(): string
     {
         return $this->lieu;
     }
 
-    public function setLieu($value)
+    public function setLieu(string $lieu): self
     {
-        $this->lieu = $value;
+        $this->lieu = $lieu;
+        return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "match_id", targetEntity: Performanceathlete::class)]
-    private Collection $performanceathletes;
+    /**
+     * @return Collection|Performanceathlete[]
+     */
+    public function getPerformances(): Collection
+    {
+        return $this->performances;
+    }
+
+    public function addPerformance(Performanceathlete $performance): self
+    {
+        if (!$this->performances->contains($performance)) {
+            $this->performances[] = $performance;
+            $performance->setMatch($this);
+        }
+        return $this;
+    }
+
+    public function removePerformance(Performanceathlete $performance): self
+    {
+        if ($this->performances->removeElement($performance)) {
+            if ($performance->getMatch() === $this) {
+                $performance->setMatch(null);
+            }
+        }
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            'Match %s vs %s - %s',
+            $this->equipe1 ? $this->equipe1->getNom() : '?',
+            $this->equipe2 ? $this->equipe2->getNom() : '?',
+            $this->date->format('Y-m-d H:i')
+        );
+    }
 }

@@ -3,109 +3,151 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-use App\Entity\Installationsportive;
 use Doctrine\Common\Collections\Collection;
-use App\Entity\Exercice_entrainment;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: "App\Repository\EntrainmentRepository")]
 class Entrainment
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "entrainments")]
-    #[ORM\JoinColumn(name: 'equipe_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Equipe $equipe_id;
+    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "entrainements")]
+    #[ORM\JoinColumn(name: "equipe_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    private ?Equipe $equipe = null;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Le nom de l'entraînement est obligatoire")]
     private string $nom;
 
-        #[ORM\ManyToOne(targetEntity: Installationsportive::class, inversedBy: "entrainments")]
-    #[ORM\JoinColumn(name: 'installationSportive_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Installationsportive $installationSportive_id;
+    #[ORM\ManyToOne(targetEntity: Installationsportive::class, inversedBy: "entrainements")]
+    #[ORM\JoinColumn(name: "installation_sportive_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    private ?Installationsportive $installationSportive = null;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: "text")]
+    #[Assert\NotBlank(message: "La description est obligatoire")]
     private string $description;
 
     #[ORM\Column(type: "datetime")]
+    #[Assert\NotNull(message: "La date de début est obligatoire")]
     private \DateTimeInterface $dateDebut;
 
     #[ORM\Column(type: "datetime")]
+    #[Assert\NotNull(message: "La date de fin est obligatoire")]
+    #[Assert\GreaterThan(propertyPath: "dateDebut", message: "La date de fin doit être après la date de début")]
     private \DateTimeInterface $dateFin;
 
-    public function getId()
+    #[ORM\OneToMany(mappedBy: "entrainment", targetEntity: ExerciceEntrainment::class, orphanRemoval: true)]
+    private Collection $exerciceEntrainments;
+
+    public function __construct()
+    {
+        $this->exerciceEntrainments = new ArrayCollection();
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function getEquipe(): ?Equipe
     {
-        $this->id = $value;
+        return $this->equipe;
     }
 
-    public function getEquipe_id()
+    public function setEquipe(?Equipe $equipe): self
     {
-        return $this->equipe_id;
+        $this->equipe = $equipe;
+        return $this;
     }
 
-    public function setEquipe_id($value)
-    {
-        $this->equipe_id = $value;
-    }
-
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
-    public function setNom($value)
+    public function setNom(string $nom): self
     {
-        $this->nom = $value;
+        $this->nom = $nom;
+        return $this;
     }
 
-    public function getInstallationSportive_id()
+    public function getInstallationSportive(): ?Installationsportive
     {
-        return $this->installationSportive_id;
+        return $this->installationSportive;
     }
 
-    public function setInstallationSportive_id($value)
+    public function setInstallationSportive(?Installationsportive $installationSportive): self
     {
-        $this->installationSportive_id = $value;
+        $this->installationSportive = $installationSportive;
+        return $this;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription($value)
+    public function setDescription(string $description): self
     {
-        $this->description = $value;
+        $this->description = $description;
+        return $this;
     }
 
-    public function getDateDebut()
+    public function getDateDebut(): \DateTimeInterface
     {
         return $this->dateDebut;
     }
 
-    public function setDateDebut($value)
+    public function setDateDebut(\DateTimeInterface $dateDebut): self
     {
-        $this->dateDebut = $value;
+        $this->dateDebut = $dateDebut;
+        return $this;
     }
 
-    public function getDateFin()
+    public function getDateFin(): \DateTimeInterface
     {
         return $this->dateFin;
     }
 
-    public function setDateFin($value)
+    public function setDateFin(\DateTimeInterface $dateFin): self
     {
-        $this->dateFin = $value;
+        $this->dateFin = $dateFin;
+        return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "entrainment_id", targetEntity: Exercice_entrainment::class)]
-    private Collection $exercice_entrainments;
+    /**
+     * @return Collection<int, ExerciceEntrainment>
+     */
+    public function getExerciceEntrainments(): Collection
+    {
+        return $this->exerciceEntrainments;
+    }
+
+    public function addExerciceEntrainment(ExerciceEntrainment $exerciceEntrainment): self
+    {
+        if (!$this->exerciceEntrainments->contains($exerciceEntrainment)) {
+            $this->exerciceEntrainments->add($exerciceEntrainment);
+            $exerciceEntrainment->setEntrainment($this);
+        }
+        return $this;
+    }
+
+    public function removeExerciceEntrainment(ExerciceEntrainment $exerciceEntrainment): self
+    {
+        if ($this->exerciceEntrainments->removeElement($exerciceEntrainment)) {
+            if ($exerciceEntrainment->getEntrainment() === $this) {
+                $exerciceEntrainment->setEntrainment(null);
+            }
+        }
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom . ' (' . $this->dateDebut->format('d/m/Y H:i') . ')';
+    }
 }
