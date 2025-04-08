@@ -19,7 +19,7 @@ class Exercice
     #[Assert\NotBlank(message: "Le nom de l'exercice est obligatoire")]
     private string $nom;
 
-    #[ORM\Column(type: "string", length: 50)]
+    #[ORM\Column(type: "string", columnDefinition: "ENUM('MUSCULATION', 'CARDIO', 'YOGA', 'PILATES', 'NATATION', 'HIIT', 'ZUMBA')")]
     #[Assert\NotBlank(message: "Le type d'exercice est obligatoire")]
     private string $typeExercice;
 

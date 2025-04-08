@@ -16,7 +16,10 @@ class EnumType extends Type
         'equipement.etat' => ['BONETAT', 'ENDOMMAGE'],
         'equipement.typeEquipement' => ['BALLON', 'FILET', 'HALTERE', 'PROTECTIONS', 'CONES',
             'MACHINE_DE_MUSCULATION', 'CHRONOMETRE', 'TABLE_DE_MARQUE', 'AUTRE'],
-        'tournois.sport' => ['FOOTBALL', 'BASKETBALL', 'HANDBALL']
+        'tournois.sport' => ['FOOTBALL', 'BASKETBALL', 'HANDBALL'],
+        'exercice.type' => [
+            'MUSCULATION', 'CARDIO', 'YOGA', 'PILATES', 'NATATION', 'HIIT', 'ZUMBA'
+        ]
     ];
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
