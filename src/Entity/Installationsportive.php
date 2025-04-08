@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Installationsportive
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private int $id;
 

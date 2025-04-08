@@ -30,8 +30,7 @@ class InstallationsportiveFixtures extends Fixture implements DependentFixtureIn
             );
 
             $installation
-                ->setId($i)
-                ->setManager($managerUser) // Changed from setManager_id() to setManager()
+                ->setManager($managerUser)
                 ->setNom('Complexe Sportif ' . $faker->randomElement($cities))
                 ->setTypeInstallation($faker->randomElement($types))
                 ->setAdresse($faker->streetAddress . ', ' . $faker->city)
@@ -44,17 +43,6 @@ class InstallationsportiveFixtures extends Fixture implements DependentFixtureIn
         }
 
         $manager->flush();
-    }
-
-    /**
-     * Fetches the highest existing ID to avoid conflicts.
-     */
-    private function getLastInstallationId(ObjectManager $manager): int
-    {
-        $repository = $manager->getRepository(Installationsportive::class);
-        $lastInstallation = $repository->findOneBy([], ['id' => 'DESC']);
-
-        return $lastInstallation ? $lastInstallation->getId() : 0;
     }
 
     private function getCapacityForType(string $type): int
