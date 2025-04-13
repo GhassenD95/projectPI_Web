@@ -1,16 +1,20 @@
 <?php
 
+// src/Form/UtilisateurType.php
 namespace App\Form;
 
 use App\Entity\Utilisateur;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\Constraints\Image;
 
 class UtilisateurType extends AbstractType
@@ -23,45 +27,68 @@ class UtilisateurType extends AbstractType
         $builder
             ->add('nom', TextType::class, [
                 'label_attr' => ['class' => $labelStyles],
+                'attr' => ['class' => $inputStyles],
+                'empty_data' => ''
             ])
             ->add('prenom', TextType::class, [
                 'label_attr' => ['class' => $labelStyles],
+                'attr' => ['class' => $inputStyles],
+                'empty_data' => ''
             ])
             ->add('role', ChoiceType::class, [
                 'label_attr' => ['class' => $labelStyles],
+                'attr' => ['class' => $inputStyles],
                 'choices' => [
                     'Athlète' => 'ATHLETE',
                     'Coach' => 'COACH',
                     'Manager' => 'MANAGER',
                     'Admin' => 'ADMIN'
                 ],
+                'empty_data' => 'ATHLETE'
             ])
             ->add('email', EmailType::class, [
                 'label_attr' => ['class' => $labelStyles],
+                'attr' => ['class' => $inputStyles],
+                'empty_data' => ''
             ])
             ->add('password', PasswordType::class, [
                 'label_attr' => ['class' => $labelStyles],
+                'attr' => ['class' => $inputStyles],
+                'required' => $options['require_password'],
+                'empty_data' => '',
+                'mapped' => true,
+                'constraints' => $options['require_password'] ? [
+                    new Length([
+                        'min' => 6,
+                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        'max' => 4096,
+                        'groups' => ['registration', 'password_update']
+                    ]),
+                ] : []
             ])
             ->add('adresse', TextType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'required' => false,
-                'attr' => ['class' => $inputStyles]
+                'attr' => ['class' => $inputStyles],
+                'empty_data' => ''
             ])
             ->add('telephone', TextType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'required' => false,
+                'attr' => ['class' => $inputStyles],
+                'empty_data' => ''
             ])
             ->add('imageUrl', FileType::class, [
                 'label_attr' => ['class' => $labelStyles],
+                'attr' => ['class' => $inputStyles],
                 'required' => false,
                 'mapped' => false,
                 'constraints' => [
                     new Image([
                         'maxSize' => '2M',
-                        'mimeTypes' => ['image/jpeg', 'image/png']
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Please upload a valid JPEG or PNG image',
+                        'maxSizeMessage' => 'The file is too large ({{ size }} {{ suffix }}). Maximum allowed: {{ limit }} {{ suffix }}'
                     ])
-                ],
-
+                ]
             ]);
     }
 
@@ -69,7 +96,20 @@ class UtilisateurType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Utilisateur::class,
-            'attr' => ['class' => 'space-y-6']
+            'attr' => ['class' => 'space-y-6'],
+            'require_password' => true,
+            'validation_groups' => function (FormInterface $form) {
+                $data = $form->getData();
+                $groups = ['Default'];
+
+                if (null === $data->getId()) {
+                    $groups[] = 'registration';
+                } elseif (!empty($form->get('password')->getData())) {
+                    $groups[] = 'password_update';
+                }
+
+                return $groups;
+            }
         ]);
     }
 }

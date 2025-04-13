@@ -3,56 +3,104 @@
 {% block title %}Utilisateur{% endblock %}
 
 {% block body %}
-    <h1>Utilisateur</h1>
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-orange-200 to-indigo-400 px-6 py-4 px-6 py-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-neutral-700">Détails Utilisateur</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ utilisateur.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ utilisateur.nom }}</td>
-            </tr>
-            <tr>
-                <th>Prenom</th>
-                <td>{{ utilisateur.prenom }}</td>
-            </tr>
-            <tr>
-                <th>Role</th>
-                <td>{{ utilisateur.role }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ utilisateur.email }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ utilisateur.password }}</td>
-            </tr>
-            <tr>
-                <th>Adresse</th>
-                <td>{{ utilisateur.adresse }}</td>
-            </tr>
-            <tr>
-                <th>Telephone</th>
-                <td>{{ utilisateur.telephone }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ utilisateur.status }}</td>
-            </tr>
-            <tr>
-                <th>ImageUrl</th>
-                <td>{{ utilisateur.imageUrl }}</td>
-            </tr>
-        </tbody>
-    </table>
+                {% if utilisateur.imageUrl %}
+                    <img src="{{ utilisateur.imageUrl }}" alt="Photo de profil" class="h-16 w-16 rounded-full border-2 border-white shadow-md">
+                {% else %}
+                    <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center border-2 border-white shadow-md">
+                        <span class="text-gray-500 text-xl font-bold">{{ utilisateur.nom|first }}{{ utilisateur.prenom|first }}</span>
+                    </div>
+                {% endif %}
+            </div>
 
-    <a href="{{ path('app_utilisateur_index') }}">back to list</a>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Nom complet</h3>
+                                <p class="mt-1 text-lg font-semibold text-gray-900">{{ utilisateur.prenom }} {{ utilisateur.nom }}</p>
+                            </div>
 
-    <a href="{{ path('app_utilisateur_edit', {'id': utilisateur.id}) }}">edit</a>
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Email</h3>
+                                <p class="mt-1 text-lg text-gray-900">{{ utilisateur.email }}</p>
+                            </div>
 
-    {{ include('utilisateur/_delete_form.html.twig') }}
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Rôle</h3>
+                                <p class="mt-1">
+                                <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full
+                                    {% if utilisateur.role == 'ADMIN' %}
+                                        bg-purple-100 text-purple-800
+                                    {% elseif utilisateur.role == 'USER' %}
+                                        bg-blue-100 text-blue-800
+                                    {% else %}
+                                        bg-gray-100 text-gray-800
+                                    {% endif %}">
+                                    {{ utilisateur.role }}
+                                </span>
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Status</h3>
+                                <p class="mt-1">
+                                <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full
+                                    {% if utilisateur.status == 'active' %}
+                                        bg-green-100 text-green-800
+                                    {% else %}
+                                        bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ utilisateur.status }}
+                                </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
+                        <div class="space-y-4">
+
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Adresse</h3>
+                                <p class="mt-1 text-lg text-gray-900">{{ utilisateur.adresse }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Téléphone</h3>
+                                <p class="mt-1 text-lg text-gray-900">{{ utilisateur.telephone }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-gray-200">
+                    <a href="{{ path('app_utilisateur_index') }}" class="flex items-center text-gray-600 hover:text-gray-900 font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Retour à la liste
+                    </a>
+
+                    <div class="flex space-x-3 ">
+                        <a href="{{ path('app_utilisateur_edit', {'id': utilisateur.id}) }}" class="transition inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Modifier
+                        </a>
+
+                        <div class=" " >
+                            {{ include('utilisateur/_delete_form.html.twig', {'button_class': ' inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

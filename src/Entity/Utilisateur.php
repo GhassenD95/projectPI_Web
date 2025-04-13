@@ -41,7 +41,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column(name: "hashed_password", type: "string")]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['registration'])]
     private string $password;
     #[ORM\Column(type: "string", length: 255)]
     #[Assert\NotBlank]

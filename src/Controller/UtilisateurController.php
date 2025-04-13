@@ -7,6 +7,7 @@ use App\Form\UtilisateurType;
 use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,27 +27,32 @@ final class UtilisateurController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $utilisateur = new Utilisateur();
-        $form = $this->createForm(UtilisateurType::class, $utilisateur);
+        $form = $this->createForm(UtilisateurType::class, $utilisateur, [
+            'require_password' => true
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Handle image upload
             $imageFile = $form->get('imageUrl')->getData();
-
             if ($imageFile) {
                 $newFilename = uniqid().'.'.$imageFile->guessExtension();
-
-                // Move the file to the directory where images are stored
-                $imageFile->move(
-                    $this->getParameter('kernel.project_dir').'/public/uploads/images',
-                    $newFilename
-                );
-
-                // Update the imageUrl property to store the file name/path
-                $utilisateur->setImageUrl('/uploads/images/'.$newFilename);
+                try {
+                    $imageFile->move(
+                        $this->getParameter('kernel.project_dir').'/public/uploads/images',
+                        $newFilename
+                    );
+                    $utilisateur->setImageUrl('/uploads/images/'.$newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Failed to upload image');
+                }
             }
 
-            $password = $utilisateur->getPassword();
-            $utilisateur->setPassword(password_hash($password, PASSWORD_DEFAULT));
+            // Hash password
+            $utilisateur->setPassword(
+                password_hash($utilisateur->getPassword(), PASSWORD_DEFAULT)
+            );
+
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
@@ -58,7 +64,6 @@ final class UtilisateurController extends AbstractController
             'form' => $form,
         ]);
     }
-
     #[Route('/{id}', name: 'app_utilisateur_show', methods: ['GET'])]
     public function show(Utilisateur $utilisateur): Response
     {
@@ -70,13 +75,45 @@ final class UtilisateurController extends AbstractController
     #[Route('/{id}/edit', name: 'app_utilisateur_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(UtilisateurType::class, $utilisateur);
+        $originalPassword = $utilisateur->getPassword();
+        $originalImageUrl = $utilisateur->getImageUrl();
+
+        $form = $this->createForm(UtilisateurType::class, $utilisateur, [
+            'require_password' => false
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Handle image upload
+            $imageFile = $form->get('imageUrl')->getData();
+            if ($imageFile) {
+                $newFilename = uniqid().'.'.$imageFile->guessExtension();
+                try {
+                    $imageFile->move(
+                        $this->getParameter('kernel.project_dir').'/public/uploads/images',
+                        $newFilename
+                    );
+                    // Delete old image if it exists
+                    if ($originalImageUrl && file_exists($this->getParameter('kernel.project_dir').'/public'.$originalImageUrl)) {
+                        unlink($this->getParameter('kernel.project_dir').'/public'.$originalImageUrl);
+                    }
+                    $utilisateur->setImageUrl('/uploads/images/'.$newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Failed to upload image');
+                }
+            }
+
+            // Only update password if provided
+            $newPassword = $form->get('password')->getData();
+            if ($newPassword) {
+                $utilisateur->setPassword(
+                    password_hash($newPassword, PASSWORD_DEFAULT)
+                );
+            } else {
+                $utilisateur->setPassword($originalPassword);
+            }
 
             $entityManager->flush();
-
             return $this->redirectToRoute('app_utilisateur_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -85,7 +122,6 @@ final class UtilisateurController extends AbstractController
             'form' => $form,
         ]);
     }
-
     #[Route('/{id}', name: 'app_utilisateur_delete', methods: ['POST'])]
     public function delete(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
     {
