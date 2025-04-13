@@ -24,11 +24,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Equipe $equipe = null;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: "Le nom est obligatoire")]
     private string $nom;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: "Le prénom est obligatoire")]
     private string $prenom;
 
     #[ORM\Column(type: "string", length: 20, columnDefinition: "ENUM('ADMIN', 'MANAGER', 'COACH', 'ATHLETE')")]
@@ -36,25 +36,28 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private string $role = 'ATHLETE';
 
     #[ORM\Column(type: "string", length: 180, unique: true)]
-    #[Assert\NotBlank]
-    #[Assert\Email]
+    #[Assert\NotBlank(message: "L'email est obligatoire")]
+    #[Assert\Email(message: "L'email n'est pas valide")]
     private string $email;
 
     #[ORM\Column(name: "hashed_password", type: "string")]
-    #[Assert\NotBlank(groups: ['registration'])]
+    #[Assert\NotBlank(groups: ['registration'], message: "Le mot de passe est obligatoire")]
     private string $password;
+
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: "L'adresse est obligatoire")]
     private string $adresse;
 
     #[ORM\Column(type: "string", length: 20)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: "Le téléphone est obligatoire")]
     private string $telephone;
 
     #[ORM\Column(type: "string", length: 10, columnDefinition: "ENUM('ACTIVE', 'INACTIVE')")]
-    private string $status = 'INACTIVE'; //
+    private string $status = 'INACTIVE';
+
     #[ORM\Column(name: "image_url", type: "string", length: 255, nullable: true)]
-    private ?string $imageUrl;
+    private ?string $imageUrl = null;
+
     #[ORM\OneToMany(mappedBy: "manager", targetEntity: Installationsportive::class)]
     private Collection $installationsGerees;
 
@@ -80,55 +83,181 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /* Security Interface Methods */
-    public function getRoles(): array { return [$this->role]; }
-    public function getPassword(): string { return $this->password; }
-    public function getSalt(): ?string { return null; }
-    public function eraseCredentials() {}
-    public function getUsername(): string { return $this->email; }
-    public function getUserIdentifier(): string { return $this->email; }
+    public function getRoles(): array
+    {
+        return ['ROLE_' . $this->role];
+    }
 
-    /* Getters/Setters */
-    public function getId(): ?int { return $this->id; }
-    public function getEquipe(): ?Equipe { return $this->equipe; }
-    public function setEquipe(?Equipe $equipe): self { $this->equipe = $equipe; return $this; }
-    public function getNom(): string { return $this->nom; }
-    public function setNom(string $nom): self { $this->nom = $nom; return $this; }
-    public function getPrenom(): string { return $this->prenom; }
-    public function setPrenom(string $prenom): self { $this->prenom = $prenom; return $this; }
-    public function getRole(): string { return $this->role; }
-    public function setRole(string $role): self {
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Clear any temporary sensitive data
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    /* Entity Methods */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getEquipe(): ?Equipe
+    {
+        return $this->equipe;
+    }
+
+    public function setEquipe(?Equipe $equipe): self
+    {
+        $this->equipe = $equipe;
+        return $this;
+    }
+
+    public function getNom(): string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getPrenom(): string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): self
+    {
+        $this->prenom = $prenom;
+        return $this;
+    }
+
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): self
+    {
         if (!in_array($role, ['ADMIN', 'MANAGER', 'COACH', 'ATHLETE'])) {
             throw new \InvalidArgumentException("Invalid role");
         }
         $this->role = $role;
         return $this;
     }
-    public function getEmail(): string { return $this->email; }
-    public function setEmail(string $email): self { $this->email = $email; return $this; }
-    public function setPassword(string $password): self { $this->password = $password; return $this; }
-    public function getHashedPassword(): string { return $this->password; }
-    public function setHashedPassword(string $password): self { $this->password = $password; return $this; }
-    public function getAdresse(): string { return $this->adresse; }
-    public function setAdresse(string $adresse): self { $this->adresse = $adresse; return $this; }
-    public function getTelephone(): string { return $this->telephone; }
-    public function setTelephone(string $telephone): self { $this->telephone = $telephone; return $this; }
-    public function getStatus(): string { return $this->status; }
-    public function setStatus(string $status): self {
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function getHashedPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setHashedPassword(string $password): self
+    {
+        return $this->setPassword($password);
+    }
+
+    public function getAdresse(): string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): self
+    {
+        $this->adresse = $adresse;
+        return $this;
+    }
+
+    public function getTelephone(): string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephone): self
+    {
+        $this->telephone = $telephone;
+        return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
         if (!in_array($status, ['ACTIVE', 'INACTIVE'])) {
             throw new \InvalidArgumentException("Invalid status");
         }
         $this->status = $status;
         return $this;
     }
-    public function getImageUrl(): ?string { return $this->imageUrl; }
-    public function setImageUrl(?string $imageUrl): self { $this->imageUrl = $imageUrl; return $this; }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function setImageUrl(?string $imageUrl): self
+    {
+        $this->imageUrl = $imageUrl;
+        return $this;
+    }
 
     /* Collection Methods */
-    public function getInstallationsGerees(): Collection { return $this->installationsGerees; }
-    public function getEquipesCoachees(): Collection { return $this->equipesCoachees; }
-    public function getDossiersMedicaux(): Collection { return $this->dossiersMedicaux; }
-    public function getBlessures(): Collection { return $this->blessures; }
-    public function getPerformancesAthlete(): Collection { return $this->performancesAthlete; }
+    public function getInstallationsGerees(): Collection
+    {
+        return $this->installationsGerees;
+    }
 
-    public function __toString(): string { return $this->prenom . ' ' . $this->nom; }
+    public function getEquipesCoachees(): Collection
+    {
+        return $this->equipesCoachees;
+    }
+
+    public function getDossiersMedicaux(): Collection
+    {
+        return $this->dossiersMedicaux;
+    }
+
+    public function getBlessures(): Collection
+    {
+        return $this->blessures;
+    }
+
+    public function getPerformancesAthlete(): Collection
+    {
+        return $this->performancesAthlete;
+    }
+
+    public function __toString(): string
+    {
+        return $this->prenom . ' ' . $this->nom;
+    }
 }

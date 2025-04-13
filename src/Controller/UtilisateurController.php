@@ -26,6 +26,9 @@ final class UtilisateurController extends AbstractController
     #[Route('/new', name: 'app_utilisateur_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if($this->getUser()){
+            return $this->redirectToRoute('app_home_page');
+        }
         $utilisateur = new Utilisateur();
         $form = $this->createForm(UtilisateurType::class, $utilisateur, [
             'require_password' => true
