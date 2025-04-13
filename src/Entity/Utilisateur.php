@@ -5,11 +5,13 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: "App\Repository\UtilisateurRepository")]
+#[UniqueEntity(fields: ['email'], message: 'This email is already registered.')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -30,6 +32,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private string $prenom;
 
     #[ORM\Column(type: "string", length: 20, columnDefinition: "ENUM('ADMIN', 'MANAGER', 'COACH', 'ATHLETE')")]
+    #[Assert\NotBlank]
     private string $role = 'ATHLETE';
 
     #[ORM\Column(type: "string", length: 180, unique: true)]
@@ -38,6 +41,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private string $email;
 
     #[ORM\Column(name: "hashed_password", type: "string")]
+    #[Assert\NotBlank]
     private string $password;
     #[ORM\Column(type: "string", length: 255)]
     #[Assert\NotBlank]
@@ -48,9 +52,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private string $telephone;
 
     #[ORM\Column(type: "string", length: 10, columnDefinition: "ENUM('ACTIVE', 'INACTIVE')")]
-    private string $status = 'ACTIVE'; // NOT 'ACTIVE' (with extra E)
+    private string $status = 'INACTIVE'; //
     #[ORM\Column(name: "image_url", type: "string", length: 255, nullable: true)]
-    private ?string $imageUrl = null;
+    private ?string $imageUrl;
     #[ORM\OneToMany(mappedBy: "manager", targetEntity: Installationsportive::class)]
     private Collection $installationsGerees;
 

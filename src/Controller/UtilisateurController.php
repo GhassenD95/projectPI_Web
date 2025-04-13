@@ -30,6 +30,23 @@ final class UtilisateurController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('imageUrl')->getData();
+
+            if ($imageFile) {
+                $newFilename = uniqid().'.'.$imageFile->guessExtension();
+
+                // Move the file to the directory where images are stored
+                $imageFile->move(
+                    $this->getParameter('kernel.project_dir').'/public/uploads/images',
+                    $newFilename
+                );
+
+                // Update the imageUrl property to store the file name/path
+                $utilisateur->setImageUrl('/uploads/images/'.$newFilename);
+            }
+
+            $password = $utilisateur->getPassword();
+            $utilisateur->setPassword(password_hash($password, PASSWORD_DEFAULT));
             $entityManager->persist($utilisateur);
             $entityManager->flush();
 
@@ -57,6 +74,7 @@ final class UtilisateurController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_utilisateur_index', [], Response::HTTP_SEE_OTHER);
