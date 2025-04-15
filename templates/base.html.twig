@@ -13,12 +13,17 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
-        {{ include('/partials/navbar.html.twig') }}
-        <div class=" bg-gray-200 p-5">
-            <div class="rounded-xs min-h-lvh bg-white">
-                {% block body %}{% endblock %}
-            </div>
+    <body >
+    <div style="background-color: #f9f9f9" class="min-h-screen {{ is_granted('ROLE_ADMIN') ? 'flex' : '' }}">
+        {% if is_granted('ROLE_ADMIN') %}
+            {% include 'partials/navbar-admin.html.twig' %}
+        {% else %}
+            {% include 'partials/navbar.html.twig' %}
+        {% endif %}
+
+        <div class="p-2 w-full {{ is_granted('ROLE_ADMIN') ? 'flex-1' : '' }}">
+            {% block body %}{% endblock %}
         </div>
-    </body>
-</html>
+    </div>
+
+    </body></html>

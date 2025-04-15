@@ -12,10 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/utilisateur')]
 final class UtilisateurController extends AbstractController
 {
-    #[Route(name: 'app_utilisateur_index', methods: ['GET'])]
+    #[Route('/utilisateur',name: 'app_utilisateur_index', methods: ['GET'])]
+    #[Route('/admin/utilisateur', name: 'app_admin_utilisateur', methods: ['GET'])]
     public function index(UtilisateurRepository $utilisateurRepository): Response
     {
         return $this->render('utilisateur/index.html.twig', [
@@ -23,12 +23,11 @@ final class UtilisateurController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_utilisateur_new', methods: ['GET', 'POST'])]
+    #[Route('/utilisateur/new', name: 'app_utilisateur_new', methods: ['GET', 'POST'])]
+    #[Route('/admin/utilisateur/new', name: 'app_admin_utilisateur-new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if($this->getUser()){
-            return $this->redirectToRoute('app_home_page');
-        }
+
         $utilisateur = new Utilisateur();
         $form = $this->createForm(UtilisateurType::class, $utilisateur, [
             'require_password' => true
@@ -67,7 +66,8 @@ final class UtilisateurController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[Route('/{id}', name: 'app_utilisateur_show', methods: ['GET'])]
+    #[Route('/utilisateur/{id}', name: 'app_utilisateur_show', methods: ['GET'])]
+    #[Route('/admin/utilisateur/{id}', name: 'app_admin_utilisateur-show', methods: ['GET'])]
     public function show(Utilisateur $utilisateur): Response
     {
         return $this->render('utilisateur/show.html.twig', [
@@ -75,7 +75,8 @@ final class UtilisateurController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_utilisateur_edit', methods: ['GET', 'POST'])]
+    #[Route('/utilisateur/{id}/edit', name: 'app_utilisateur_edit', methods: ['GET', 'POST'])]
+    #[Route('/admin/utilisateur/{id}/edit', name: 'app_admin_utilisateur_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
     {
         $originalPassword = $utilisateur->getPassword();
@@ -125,7 +126,8 @@ final class UtilisateurController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[Route('/{id}', name: 'app_utilisateur_delete', methods: ['POST'])]
+    #[Route('/utilisateur/{id}', name: 'app_utilisateur_delete', methods: ['POST'])]
+    #[Route('/admin/utilisateur/{id}', name: 'app_admin_utilisateur_delete', methods: ['POST'])]
     public function delete(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$utilisateur->getId(), $request->getPayload()->getString('_token'))) {

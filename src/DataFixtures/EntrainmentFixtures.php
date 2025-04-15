@@ -10,6 +10,9 @@ use Faker\Factory;
 
 class EntrainmentFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
@@ -21,7 +24,7 @@ class EntrainmentFixtures extends Fixture implements DependentFixtureInterface
             $installationNumber = ($i % 10) + 1;
             $installationSportive = $this->getReference(
                 InstallationsportiveFixtures::INSTALLATION_REFERENCE . $installationNumber,
-                'App\Entity\Installationsportive'
+                'App\Entity\Installation sportive'
             );
 
             // Create 2-3 training sessions per team

@@ -32,12 +32,10 @@ class UtilisateurType extends AbstractType
             ])
             ->add('prenom', TextType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'attr' => ['class' => $inputStyles],
                 'empty_data' => ''
             ])
             ->add('role', ChoiceType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'attr' => ['class' => $inputStyles],
                 'choices' => [
                     'Athlète' => 'ATHLETE',
                     'Coach' => 'COACH',
@@ -48,12 +46,10 @@ class UtilisateurType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'attr' => ['class' => $inputStyles],
                 'empty_data' => ''
             ])
             ->add('password', PasswordType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'attr' => ['class' => $inputStyles],
                 'required' => $options['require_password'],
                 'empty_data' => '',
                 'mapped' => true,
@@ -68,17 +64,14 @@ class UtilisateurType extends AbstractType
             ])
             ->add('adresse', TextType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'attr' => ['class' => $inputStyles],
                 'empty_data' => ''
             ])
             ->add('telephone', TextType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'attr' => ['class' => $inputStyles],
                 'empty_data' => ''
             ])
-            ->add('imageUrl', FileType::class, [
+            ->add('image', FileType::class, [
                 'label_attr' => ['class' => $labelStyles],
-                'attr' => ['class' => $inputStyles],
                 'required' => false,
                 'mapped' => false,
                 'constraints' => [

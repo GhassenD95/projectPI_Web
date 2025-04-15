@@ -36,20 +36,20 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private string $role = 'ATHLETE';
 
     #[ORM\Column(type: "string", length: 180, unique: true)]
-    #[Assert\NotBlank(message: "L'email est obligatoire")]
-    #[Assert\Email(message: "L'email n'est pas valide")]
+    #[Assert\NotBlank(message: "Email is required")]
+    #[Assert\Email(message: "Please enter a valid email address")]
     private string $email;
 
     #[ORM\Column(name: "hashed_password", type: "string")]
-    #[Assert\NotBlank(groups: ['registration'], message: "Le mot de passe est obligatoire")]
+    #[Assert\NotBlank(groups: ['registration'], message: "Password is required")]
     private string $password;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank(message: "L'adresse est obligatoire")]
+    #[Assert\NotBlank(message: "Address is required")]
     private string $adresse;
 
     #[ORM\Column(type: "string", length: 20)]
-    #[Assert\NotBlank(message: "Le téléphone est obligatoire")]
+    #[Assert\NotBlank(message: "Phone is required")]
     private string $telephone;
 
     #[ORM\Column(type: "string", length: 10, columnDefinition: "ENUM('ACTIVE', 'INACTIVE')")]

@@ -26,7 +26,8 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
-                default_target_path: app_dashboard
+                default_target_path: app_home_page
+                success_handler: App\Security\LoginSuccessHandler
             logout:
                 path: app_logout
                 target: app_login
@@ -35,4 +36,5 @@ security:
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/utilisateur/new$, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/$, roles: PUBLIC_ACCESS }  # Public access to root path
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }  # All other paths require auth
