@@ -14,4 +14,13 @@ class UtilisateurRepository extends ServiceEntityRepository
     }
 
     // Add custom methods as needed
+    public function findCoachesAndAthletes(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.role IN (:roles)')
+            ->setParameter('roles', ['COACH', 'ATHLETE'])
+            ->getQuery()
+            ->getResult();
+    }
+
 }

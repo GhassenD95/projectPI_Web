@@ -18,8 +18,15 @@ final class UtilisateurController extends AbstractController
     #[Route('/admin/utilisateur', name: 'app_admin_utilisateur', methods: ['GET'])]
     public function index(UtilisateurRepository $utilisateurRepository): Response
     {
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $utilisateurs = $utilisateurRepository->findAll();
+        } else {
+            $utilisateurs = $utilisateurRepository->findCoachesAndAthletes();
+        }
+
         return $this->render('utilisateur/index.html.twig', [
-            'utilisateurs' => $utilisateurRepository->findAll(),
+            'utilisateurs' => $utilisateurs,
         ]);
     }
 

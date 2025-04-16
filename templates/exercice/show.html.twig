@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Exercice{% endblock %}
+
+{% block body %}
+    <h1>Exercice</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ exercice.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ exercice.nom }}</td>
+            </tr>
+            <tr>
+                <th>TypeExercice</th>
+                <td>{{ exercice.typeExercice }}</td>
+            </tr>
+            <tr>
+                <th>DureeMinutes</th>
+                <td>{{ exercice.dureeMinutes }}</td>
+            </tr>
+            <tr>
+                <th>Sets</th>
+                <td>{{ exercice.sets }}</td>
+            </tr>
+            <tr>
+                <th>Reps</th>
+                <td>{{ exercice.reps }}</td>
+            </tr>
+            <tr>
+                <th>ImageUrl</th>
+                <td>{{ exercice.imageUrl }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_exercice_index') }}">back to list</a>
+
+    <a href="{{ path('app_exercice_edit', {'id': exercice.id}) }}">edit</a>
+
+    {{ include('exercice/_delete_form.html.twig') }}
+{% endblock %}

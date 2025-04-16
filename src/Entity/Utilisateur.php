@@ -24,11 +24,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Equipe $equipe = null;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank(message: "Le nom est obligatoire")]
+    #[Assert\NotBlank(message: "Name is required")]
     private string $nom;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank(message: "Le prénom est obligatoire")]
+    #[Assert\NotBlank(message: "First name is required")]
     private string $prenom;
 
     #[ORM\Column(type: "string", length: 20, columnDefinition: "ENUM('ADMIN', 'MANAGER', 'COACH', 'ATHLETE')")]
