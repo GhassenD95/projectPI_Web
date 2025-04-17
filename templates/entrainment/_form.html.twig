@@ -1,0 +1,127 @@
+{# templates/entrainment/_form.html.twig #}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'space-y-8'}}) }}
+<div class="bg-white shadow-xl rounded-lg overflow-hidden">
+    <!-- Form Header -->
+    <div class="bg-indigo-700 px-6 py-4">
+        <h2 class="text-xl font-semibold text-white">
+            {{ form.vars.value.id ? 'Edit Training Session' : 'Create New Training Session' }}
+        </h2>
+    </div>
+
+    <div class="p-6 space-y-6">
+        <!-- Session Name -->
+        <div class="space-y-2">
+            {{ form_label(form.nom, 'Session Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            <div class="relative mt-1">
+                {{ form_widget(form.nom, {'attr': {
+                    'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-4 pr-10 transition duration-150 ease-in-out',
+                    'placeholder': 'Morning Cardio Session'
+                }}) }}
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1H7a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 001-1V5a1 1 0 00-1-1H9V3a1 1 0 011-1h1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+            {{ form_errors(form.nom, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-2">
+            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+            {{ form_widget(form.description, {'attr': {
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-4 transition duration-150 ease-in-out',
+                'rows': 4,
+                'placeholder': 'Describe the purpose and focus of this session...'
+            }}) }}
+            {{ form_errors(form.description, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+        </div>
+
+        <!-- Date & Time Grid -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <!-- Start Date -->
+            <div class="space-y-2">
+                {{ form_label(form.dateDebut, 'Start Date & Time', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                <div class="relative mt-1">
+                    {{ form_widget(form.dateDebut, {'attr': {
+                        'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-4 pr-10 transition duration-150 ease-in-out'
+                    }}) }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+                {{ form_errors(form.dateDebut, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+            </div>
+
+            <!-- End Date -->
+            <div class="space-y-2">
+                {{ form_label(form.dateFin, 'End Date & Time', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                <div class="relative mt-1">
+                    {{ form_widget(form.dateFin, {'attr': {
+                        'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-4 pr-10 transition duration-150 ease-in-out'
+                    }}) }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+                {{ form_errors(form.dateFin, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+            </div>
+        </div>
+
+        <!-- Team & Location Grid -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <!-- Team -->
+            <div class="space-y-2">
+                {{ form_label(form.equipe, 'Team', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                <div class="relative mt-1">
+                    {{ form_widget(form.equipe, {'attr': {
+                        'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-4 pr-10 transition duration-150 ease-in-out'
+                    }}) }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
+                        </svg>
+                    </div>
+                </div>
+                {{ form_errors(form.equipe, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+            </div>
+
+            <!-- Location -->
+            <div class="space-y-2">
+                {{ form_label(form.installationSportive, 'Location', {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                <div class="relative mt-1">
+                    {{ form_widget(form.installationSportive, {'attr': {
+                        'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-4 pr-10 transition duration-150 ease-in-out'
+                    }}) }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+                {{ form_errors(form.installationSportive, {'attr': {'class': 'mt-1 text-sm text-red-600'}}) }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Footer -->
+    <div class="bg-gray-50 px-6 py-4 flex justify-between border-t border-gray-200">
+        <a href="{{ path('app_entrainment_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+            <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Cancel
+        </a>
+        <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            {{ button_label|default('Save Session') }}
+        </button>
+    </div>
+</div>
+{{ form_end(form) }}

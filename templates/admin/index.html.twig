@@ -4,14 +4,14 @@
 
 {% block body %}
     <div class="h-screen w-full flex flex-col overflow-hidden">
-        <!-- Top Bar -->
         <header class="bg-white shadow-sm z-10">
             <div class="flex items-center justify-between p-4">
                 <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3">
                             <i class="fas fa-search text-gray-400"></i>
                         </span>
-                    <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" placeholder="Search..."
+                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
                 <div class="flex items-center">
@@ -26,13 +26,10 @@
             </div>
         </header>
 
-        <!-- Content -->
         <main class="flex-1 overflow-y-auto p-6">
             <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
 
-            <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                <!-- Users Card -->
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-blue-100 text-blue-600">
@@ -45,7 +42,6 @@
                     </div>
                 </div>
 
-                <!-- Training Card -->
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-green-100 text-green-600">
@@ -58,7 +54,6 @@
                     </div>
                 </div>
 
-                <!-- Tournaments Card -->
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
@@ -71,7 +66,6 @@
                     </div>
                 </div>
 
-                <!-- Equipment Card -->
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-purple-100 text-purple-600">
@@ -85,62 +79,65 @@
                 </div>
             </div>
 
-            <!-- Tables Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Recent Activity -->
                 <div class="bg-white rounded-lg shadow">
                     <div class="border-b border-gray-200 px-6 py-4">
                         <h3 class="text-lg font-medium">Recent Activity</h3>
                     </div>
                     <div class="p-4">
-                        <div class="space-y-4">
-                            <div class="flex items-start p-2 hover:bg-gray-50 rounded-lg">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white">
-                                        <i class="fas fa-plus text-xs"></i>
+                        <div class="space-y-4 flex flex-col ">
+                            {% for log in recent_activity_logs %}
+                                <div class="flex items-center p-2 hover:bg-gray-50 rounded-lg">
+                                    <div class="flex-shrink-0">
+                                        {% set iconColor = 'gray-400' %}
+                                        {% set icon = 'info' %}
+                                        {% if log.action_type == 'Added Entrainment' %}
+                                            {% set iconColor = 'green-500' %}
+                                            {% set icon = 'plus' %}
+                                        {% elseif log.action_type == 'Deleted Entrainment' %}
+                                            {% set iconColor = 'red-500' %}
+                                            {% set icon = 'trash' %}
+                                        {% elseif log.action_type == 'Accessed Admin Dashboard' %}
+                                            {% set iconColor = 'blue-500' %}
+                                            {% set icon = 'sign-in-alt' %}
+                                        {% endif %}
+                                        <div class="w-8 h-8 rounded-full bg-{{ iconColor }}-100 text-{{ iconColor }}-600 flex items-center justify-center">
+                                            <i class="fas fa-{{ icon }} text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 text-sm">
+                                        <span class="font-semibold">{{ log.user|split('@')[0]|capitalize }}</span>
+                                        <span class="text-gray-500">
+                                            {% if log.action_type == 'Added Entrainment' %}
+                                                added a new entrainment
+                                                {% if log.details and log.details.nom %}
+                                                    "<span
+                                                        class="font-medium text-blue-600">{{ log.details.nom }}</span>"
+                                                {% endif %}
+                                            {% elseif log.action_type == 'Deleted Entrainment' %}
+                                                deleted an entrainment
+                                                {% if log.details and log.details.nom %}
+                                                    "<span
+                                                        class="font-medium text-red-600">{{ log.details.nom }}</span>"
+                                                {% endif %}
+                                            {% elseif log.action_type == 'Accessed Admin Dashboard' %}
+                                                accessed the <span
+                                                        class="font-medium text-purple-600">admin dashboard</span>
+                                            {% else %}
+                                                performed action "<span
+                                                        class="font-medium">{{ log.action_type }}</span>"
+                                            {% endif %}
+                                            {% if log.context and log.action_type != 'Accessed Admin Dashboard' %}
+                                                in <span
+                                                    class="font-medium text-indigo-600">{{ log.context|lower }}</span>
+                                            {% endif %}
+                                            <span class="text-gray-500 italic text-xs">({{ log.timestamp|date('H:i:s') }})</span>
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium">New athlete registered</p>
-                                    <p class="text-xs text-gray-500">15 minutes ago</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start p-2 hover:bg-gray-50 rounded-lg">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                                        <i class="fas fa-calendar text-xs"></i>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium">Training session scheduled</p>
-                                    <p class="text-xs text-gray-500">1 hour ago</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start p-2 hover:bg-gray-50 rounded-lg">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-white">
-                                        <i class="fas fa-trophy text-xs"></i>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium">Tournament created</p>
-                                    <p class="text-xs text-gray-500">3 hours ago</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start p-2 hover:bg-gray-50 rounded-lg">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white">
-                                        <i class="fas fa-trash text-xs"></i>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium">Equipment item deleted</p>
-                                    <p class="text-xs text-gray-500">Yesterday</p>
-                                </div>
-                            </div>
+                            {% else %}
+                                <p>No recent activity found.</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -148,7 +145,6 @@
 
             </div>
 
-            <!-- User Stats -->
             <div class="mt-6 bg-white rounded-lg shadow">
                 <div class="border-b border-gray-200 px-6 py-4">
                     <h3 class="text-lg font-medium">User Distribution</h3>
@@ -160,7 +156,8 @@
                             <span class="text-sm font-medium">{{ athletePercentage|round }}%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ athletePercentage|round }}%"></div>
+                            <div class="bg-blue-600 h-2 rounded-full"
+                                 style="width: {{ athletePercentage|round }}%"></div>
                         </div>
 
                         <div class="flex justify-between items-center">
@@ -168,7 +165,8 @@
                             <span class="text-sm font-medium">{{ coachPercentage|round }}%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-600 h-2 rounded-full" style="width: {{ coachPercentage|round }}%"></div>
+                            <div class="bg-green-600 h-2 rounded-full"
+                                 style="width: {{ coachPercentage|round }}%"></div>
                         </div>
 
                         <div class="flex justify-between items-center">
@@ -176,7 +174,8 @@
                             <span class="text-sm font-medium">{{ managerPercentage|round }}%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-purple-600 h-2 rounded-full" style="width: {{ managerPercentage|round }}%"></div>
+                            <div class="bg-purple-600 h-2 rounded-full"
+                                 style="width: {{ managerPercentage|round }}%"></div>
                         </div>
                     </div>
                 </div>

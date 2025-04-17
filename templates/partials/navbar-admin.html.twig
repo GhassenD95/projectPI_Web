@@ -10,7 +10,7 @@
             <p class="text-orange-400 text-xs uppercase font-semibold tracking-wider">Main</p>
         </div>
 
-        <a href="{{ path('app_admin') }}" class="flex items-center px-6 py-3 {{ app.request.attributes.get('_route') is same as('app_admin') ? "text-gray-100 bg-indigo-800 border-l-4 border-indigo-400" : "text-gray-400 hover:bg-gray-800 hover:text-white transition duration-200 ease-in-out" }}">
+        <a href="{{ path('app_admin_dashboard') }}" class="flex items-center px-6 py-3 {{ app.request.attributes.get('_route') is same as('app_admin_dashboard') ? "text-gray-100 bg-indigo-800 border-l-4 border-indigo-400" : "text-gray-400 hover:bg-gray-800 hover:text-white transition duration-200 ease-in-out" }}">
             <i class="fas fa-columns w-5 text-center text-indigo-400"></i>
             <span class="ml-3 font-medium">Dashboard</span>
         </a>
@@ -26,11 +26,11 @@
         </a>
 
         </a>
-        <a href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition duration-200 ease-in-out">
+        <a href="{{ path('app_exercice_index') }}" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition duration-200 ease-in-out">
             <i class="fas fa-clipboard-list w-5 text-center"></i>
-            <span class="ml-3">Teams</span>
+            <span class="ml-3">Exercices</span>
         </a>
-        <a href="#" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition duration-200 ease-in-out">
+        <a href="{{ path('app_entrainment_index') }}" class="flex items-center px-6 py-3 text-gray-400 hover:bg-gray-800 hover:text-white transition duration-200 ease-in-out">
             <i class="fas fa-calendar w-5 text-center"></i>
             <span class="ml-3">Training</span>
         </a>

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Entrainment{% endblock %}
+
+{% block body %}
+
+    <div class="w-full flex flex-col items-center">
+        <div class="  flex justify-center">
+            {{ include('entrainment/_form.html.twig', {'button_label': 'Update'}) }}
+
+        </div>
+        {{ include('entrainment/_delete_form.html.twig') }}
+
+    </div>
+
+
+
+{% endblock %}

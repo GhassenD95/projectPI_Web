@@ -36,3 +36,8 @@ services:
         arguments:
             $apiKey: '%env(EXERCISE_API_KEY)%'
             $apiHost: '%env(EXERCISE_API_HOST)%'
+
+    App\Service\UserActionLogger:
+        arguments:
+            $userActionLogger: '@monolog.logger.user_action'
+            $tokenStorage: '@security.token_storage'

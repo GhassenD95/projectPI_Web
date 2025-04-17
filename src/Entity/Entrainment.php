@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: "App\Repository\EntrainmentRepository")]
 class Entrainment
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
@@ -17,6 +18,7 @@ class Entrainment
 
     #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "entrainements")]
     #[ORM\JoinColumn(name: "equipe_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    #[Assert\NotBlank]
     private ?Equipe $equipe = null;
 
     #[ORM\Column(type: "string", length: 255)]
@@ -25,27 +27,35 @@ class Entrainment
 
     #[ORM\ManyToOne(targetEntity: Installationsportive::class, inversedBy: "entrainements")]
     #[ORM\JoinColumn(name: "installation_sportive_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
+    #[Assert\NotBlank()]
     private ?Installationsportive $installationSportive = null;
 
     #[ORM\Column(type: "text")]
-    #[Assert\NotBlank(message: "La description est obligatoire")]
+    #[Assert\NotBlank()]
     private string $description;
 
     #[ORM\Column(type: "datetime")]
-    #[Assert\NotNull(message: "La date de début est obligatoire")]
+    #[Assert\NotNull()]
+    #[Assert\NotBlank(message: "The start date is required.")]
     private \DateTimeInterface $dateDebut;
 
     #[ORM\Column(type: "datetime")]
-    #[Assert\NotNull(message: "La date de fin est obligatoire")]
-    #[Assert\GreaterThan(propertyPath: "dateDebut", message: "La date de fin doit être après la date de début")]
+    #[Assert\NotNull()]
+    #[Assert\NotBlank(message: "The end date is required.")]
+    #[Assert\GreaterThan(propertyPath: "dateDebut", message: "Please choose a valid date interval.")]
     private \DateTimeInterface $dateFin;
 
     #[ORM\OneToMany(mappedBy: "entrainment", targetEntity: ExerciceEntrainment::class, orphanRemoval: true)]
     private Collection $exerciceEntrainments;
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function __construct()
     {
         $this->exerciceEntrainments = new ArrayCollection();
+        $this->dateDebut = new \DateTimeImmutable(); // Sets to current datetime
+        $this->dateFin = (new \DateTimeImmutable())->modify('+1 hour'); // Sets to 1 hour later
     }
 
     public function getId(): ?int
@@ -149,5 +159,19 @@ class Entrainment
     public function __toString(): string
     {
         return $this->nom . ' (' . $this->dateDebut->format('d/m/Y H:i') . ')';
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'nom' => $this->getNom(),
+            'description' => $this->getDescription(),
+            'dateDebut' => $this->getDateDebut()?->format('Y-m-d H:i:s'),
+            'dateFin' => $this->getDateFin()?->format('Y-m-d H:i:s'),
+            'equipe' => $this->getEquipe()?->getNom(),
+            'installationSportive' => $this->getInstallationSportive()?->getNom(),
+            // You might want to include IDs of related entities if needed
+        ];
     }
 }
