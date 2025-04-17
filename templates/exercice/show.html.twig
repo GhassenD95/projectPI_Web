@@ -1,46 +1,224 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Exercice{% endblock %}
+{% block title %}{{ exercice.nom }} - Exercise Details{% endblock %}
 
 {% block body %}
-    <h1>Exercice</h1>
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-100 py-12 sm:py-24">
+        <div class="container mx-auto px-6 sm:px-8 lg:px-12">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ exercice.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ exercice.nom }}</td>
-            </tr>
-            <tr>
-                <th>TypeExercice</th>
-                <td>{{ exercice.typeExercice }}</td>
-            </tr>
-            <tr>
-                <th>DureeMinutes</th>
-                <td>{{ exercice.dureeMinutes }}</td>
-            </tr>
-            <tr>
-                <th>Sets</th>
-                <td>{{ exercice.sets }}</td>
-            </tr>
-            <tr>
-                <th>Reps</th>
-                <td>{{ exercice.reps }}</td>
-            </tr>
-            <tr>
-                <th>ImageUrl</th>
-                <td>{{ exercice.imageUrl }}</td>
-            </tr>
-        </tbody>
-    </table>
+            <!-- Back button -->
+            <div class="mb-10">
+                <a href="{{ path('app_exercice_index') }}"
+                   class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor"
+                         viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    Back to Exercises
+                </a>
+            </div>
 
-    <a href="{{ path('app_exercice_index') }}">back to list</a>
+            <!-- Main exercise card -->
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto ring-1 ring-gray-200">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <!-- Left column (image) -->
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-purple-500 opacity-70"></div>
+                        {% if exercice.imageUrl %}
+                            <img src="{{ exercice.imageUrl }}"
+                                 alt="{{ exercice.nom }}"
+                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                 alt="Default exercise image"
+                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        {% endif %}
 
-    <a href="{{ path('app_exercice_edit', {'id': exercice.id}) }}">edit</a>
+                        <div class="absolute top-6 right-6 bg-purple-500 text-white text-sm px-4 py-2 rounded-full font-semibold shadow-md">
+                            {{ exercice.typeExercice }}
+                        </div>
+                    </div>
 
-    {{ include('exercice/_delete_form.html.twig') }}
+                    <!-- Right column (details) -->
+                    <div class="py-10 px-8 sm:px-12">
+                        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-4">{{ exercice.nom }}</h2>
+
+                        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-gray-50 rounded-lg shadow-sm p-5 text-center">
+                                <div class="text-indigo-500 rounded-full inline-flex items-center justify-center p-2 bg-indigo-100 mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Duration</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ exercice.dureeMinutes }} <span class="text-gray-500 text-base">min</span></p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-sm p-5 text-center">
+                                <div class="text-green-500 rounded-full inline-flex items-center justify-center p-2 bg-green-100 mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 10v-2c0-.552-.448-1-1-1h-2c-.552 0-1 .448-1 1v2m2-6h.01M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v-2m0-8v2" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Sets</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ exercice.sets }}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg shadow-sm p-5 text-center">
+                                <div class="text-blue-500 rounded-full inline-flex items-center justify-center p-2 bg-blue-100 mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 15h9v2H4l9-12v5m7 0l-2 2 2 2m-2-2h4" />
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Reps</p>
+                                <p class="text-2xl font-bold text-gray-900">{{ exercice.reps }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 space-y-3">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Type</h3>
+                                <p class="text-gray-600">{{ exercice.typeExercice }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 flex items-center gap-4">
+                            <a href="{{ path('app_exercice_edit', {'id': exercice.id}) }}"
+                               class="inline-flex items-center justify-center px-5 py-3 text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                                Edit
+                            </a>
+                            {{ include('exercice/_delete_form.html.twig', {
+                                'exercice': exercice,
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Data Section -->
+            <!-- API Data Section -->
+            {% if bestMatch %}
+                <div class="mt-12 bg-white rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto ring-1 ring-gray-200 p-6">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Exercise Details</h3>
+
+                    <!-- Tabs Section (with Alpine.js state) -->
+                    <div x-data="{ activeTab: 'demo' }">
+                        <!-- Tabs Navigation -->
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-8">
+                                <button @click="activeTab = 'demo'"
+                                        :class="{'border-indigo-500 text-indigo-600': activeTab === 'demo', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'demo'}"
+                                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                    Demonstration
+                                </button>
+                                <button @click="activeTab = 'instructions'"
+                                        :class="{'border-indigo-500 text-indigo-600': activeTab === 'instructions', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'instructions'}"
+                                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                    Instructions
+                                </button>
+                                <button @click="activeTab = 'muscles'"
+                                        :class="{'border-indigo-500 text-indigo-600': activeTab === 'muscles', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'muscles'}"
+                                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                                    Muscles Worked
+                                </button>
+                            </nav>
+                        </div>
+
+                        <!-- Tabs Content -->
+                        <div class="mt-6">
+                            <!-- Demonstration Tab -->
+                            <div x-show="activeTab === 'demo'" x-transition>
+                                {% if bestMatch.gifUrl %}
+                                    <div class="bg-gray-100 rounded-lg overflow-hidden flex justify-center p-4">
+                                        <img src="{{ bestMatch.gifUrl }}" alt="{{ bestMatch.name }} demonstration" class="max-w-full h-auto max-h-96">
+                                    </div>
+                                {% else %}
+                                    <p class="text-gray-500">No demonstration available.</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Instructions Tab -->
+                            <div x-show="activeTab === 'instructions'" x-transition>
+                                {% if bestMatch.instructions and bestMatch.instructions|length > 0 %}
+                                    <ol class="list-decimal pl-5 space-y-3">
+                                        {% for instruction in bestMatch.instructions %}
+                                            <li class="text-gray-700">{{ instruction }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                {% else %}
+                                    <p class="text-gray-500">No instructions available for this exercise.</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Muscles Worked Tab -->
+                            <div x-show="activeTab === 'muscles'" x-transition>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 mb-2">Primary Muscle</h4>
+                                        <div class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg inline-block capitalize">
+                                            {{ bestMatch.target }}
+                                        </div>
+                                    </div>
+
+                                    {% if bestMatch.secondaryMuscles and bestMatch.secondaryMuscles|length > 0 %}
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800 mb-2">Secondary Muscles</h4>
+                                            <div class="flex flex-wrap gap-2">
+                                                {% for muscle in bestMatch.secondaryMuscles %}
+                                                    <span class="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full capitalize">
+                                            {{ muscle }}
+                                        </span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mt-6">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Equipment</h4>
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-gray-100 rounded-lg">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                            </svg>
+                                        </div>
+                                        <span class="capitalize">{{ bestMatch.equipment ?: 'Bodyweight' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Alternative Exercises Section -->
+            {% if alternatives|length > 0 %}
+                <div class="mt-12 bg-white rounded-3xl shadow-xl overflow-hidden max-w-5xl mx-auto ring-1 ring-gray-200 p-6">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Alternative Exercises</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for alternative in alternatives %}
+                            <div class="bg-gray-50 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                                {% if alternative.gifUrl %}
+                                    <img src="{{ alternative.gifUrl }}" alt="{{ alternative.name }}" class="w-full h-48 object-cover">
+                                {% endif %}
+                                <div class="p-4">
+                                    <h4 class="font-bold text-lg mb-1">{{ alternative.name|title }}</h4>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-medium rounded-full capitalize">{{ alternative.target }}</span>
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full capitalize">{{ alternative.equipment }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Alpine.js for tab functionality -->
 {% endblock %}

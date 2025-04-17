@@ -1,11 +1,109 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Exercice{% endblock %}
+{% block title %}New Exercise{% endblock %}
 
 {% block body %}
-    <h1>Create new Exercice</h1>
+    <div class="w-full">
+        <div class="flex justify-center gap-8">
+            {# Main Form #}
+            <div class="w-full max-w-2xl">
+                {{ include('exercice/_form.html.twig') }}
+            </div>
 
-    {{ include('exercice/_form.html.twig') }}
+            {# Suggestion Panel - Initially hidden #}
+            <div
+                    x-data="{
+                    suggestions: [],
+                    isLoading: false,
+                    open: false,
+                    fetchSuggestions(query) {
+                        if (query.length < 2) {
+                            this.suggestions = [];
+                            this.open = false;
+                            return;
+                        }
 
-    <a href="{{ path('app_exercice_index') }}">back to list</a>
+                        this.isLoading = true;
+                        fetch(`/exercice/api/suggest?q=${encodeURIComponent(query)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                this.suggestions = data.suggestions || [];
+                                this.open = this.suggestions.length > 0;
+                            })
+                            .finally(() => this.isLoading = false);
+                    },
+                    applySuggestion(suggestion) {
+                        document.getElementById('exercice_nom').value = suggestion;
+                        this.open = false;
+                    }
+                }"
+                    x-init="
+                    const input = document.getElementById('exercice_nom');
+                    input.addEventListener('input', (e) => fetchSuggestions(e.target.value));
+                "
+                    class="w-80 sticky top-4 h-fit"
+            >
+                {# Panel Header #}
+                <div class="bg-indigo-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+                    <h3 class="font-bold">Exercise Suggestions</h3>
+                    <button @click="open = !open" class="text-white hover:text-indigo-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path x-show="!open" fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                            <path x-show="open" fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                {# Loading State #}
+                <div x-show="isLoading" class="bg-white p-4 border border-t-0">
+                    <div class="flex items-center space-x-2 text-gray-500">
+                        <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Finding matches...</span>
+                    </div>
+                </div>
+
+                {# Suggestions List #}
+                <div
+                        x-show="open && !isLoading"
+                        x-transition
+                        class="bg-white border border-t-0 rounded-b-lg shadow"
+                >
+                    <template x-if="suggestions.length === 0">
+                        <div class="p-4 text-gray-500 text-sm">
+                            No suggestions found. Type at least 2 characters.
+                        </div>
+                    </template>
+
+                    <template x-for="(item, index) in suggestions" :key="index">
+                        <div
+                                @click="applySuggestion(item)"
+                                class="p-3 border-b hover:bg-indigo-50 cursor-pointer flex items-start"
+                        >
+                            <div class="flex-1">
+                                <div class="font-medium" x-text="item"></div>
+                                <div class="text-sm text-gray-500" x-text="item.type"></div>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </template>
+                </div>
+
+                {# Empty State #}
+                <div
+                        x-show="!open && !isLoading"
+                        class="bg-white border border-t-0 rounded-b-lg p-4 text-center text-gray-500 text-sm"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p>Start typing to see suggestions</p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

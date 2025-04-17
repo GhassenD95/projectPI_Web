@@ -3,6 +3,8 @@
 namespace App\DataFixtures;
 
 use App\Entity\Entrainment;
+use App\Entity\Equipe;
+use App\Entity\Installationsportive;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -10,21 +12,20 @@ use Faker\Factory;
 
 class EntrainmentFixtures extends Fixture implements DependentFixtureInterface
 {
-    /**
-     * @throws \DateMalformedStringException
-     */
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
 
         for ($i = 1; $i <= 30; $i++) {
-            $team = $this->getReference('team_' . $i, 'App\Entity\Equipe');
+            /** @var Equipe $team */
+            $team = $this->getReference('team_' . $i, Equipe::class); // <--- Ensure Equipe::class is here
 
             // Cycle through installations (10 available)
             $installationNumber = ($i % 10) + 1;
+            /** @var Installationsportive $installationSportive */
             $installationSportive = $this->getReference(
                 InstallationsportiveFixtures::INSTALLATION_REFERENCE . $installationNumber,
-                'App\Entity\Installation sportive'
+                Installationsportive::class // <--- Ensure Installationsportive::class is here
             );
 
             // Create 2-3 training sessions per team
@@ -57,8 +58,9 @@ class EntrainmentFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            EquipeFixtures::class,
+            UtilisateurFixtures::class,
             InstallationsportiveFixtures::class,
+            EquipeFixtures::class,
         ];
     }
 }

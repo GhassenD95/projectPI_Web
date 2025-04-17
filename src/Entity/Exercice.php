@@ -16,29 +16,32 @@ class Exercice
     private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank(message: "Le nom de l'exercice est obligatoire")]
+    #[Assert\NotBlank()]
     private string $nom;
 
     #[ORM\Column(type: "string", columnDefinition: "ENUM('MUSCULATION', 'CARDIO', 'YOGA', 'PILATES', 'NATATION', 'HIIT', 'ZUMBA')")]
-    #[Assert\NotBlank(message: "Le type d'exercice est obligatoire")]
+    #[Assert\NotBlank()]
     private string $typeExercice;
 
     #[ORM\Column(type: "integer")]
-    #[Assert\Positive(message: "La durée doit être positive")]
+    #[Assert\NotBlank()]
+    #[Assert\Positive()]
     private int $dureeMinutes;
 
     #[ORM\Column(type: "integer")]
-    #[Assert\PositiveOrZero(message: "Le nombre de sets doit être positif ou zéro")]
+    #[Assert\NotBlank()]
+    #[Assert\PositiveOrZero()]
     private int $sets;
 
     #[ORM\Column(type: "integer")]
-    #[Assert\PositiveOrZero(message: "Le nombre de répétitions doit être positif ou zéro")]
+    #[Assert\NotBlank()]
+    #[Assert\PositiveOrZero()]
     private int $reps;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $imageUrl = null;
 
-    #[ORM\OneToMany(mappedBy: "exercice", targetEntity: ExerciceEntrainment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ExerciceEntrainment::class, mappedBy: "exercice", orphanRemoval: true)]
     private Collection $exerciceEntrainments;
 
     public function __construct()

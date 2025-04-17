@@ -43,7 +43,9 @@ final class UtilisateurController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Handle image upload
-            $imageFile = $form->get('imageUrl')->getData();
+
+
+            $imageFile = $form->get('image')->getData();
             if ($imageFile) {
                 $newFilename = uniqid().'.'.$imageFile->guessExtension();
                 try {
