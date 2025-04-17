@@ -4,19 +4,28 @@ namespace App\Form;
 
 use App\Entity\Exercice;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ExerciceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom')
+            ->add('nom', TextType::class, [
+                'required' => true,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter the exercise name.',
+                    ]),
+                ],
+            ])
             ->add('typeExercice', ChoiceType::class, [
                 'choices' => [
                     'Musculation' => 'MUSCULATION',
@@ -48,6 +57,20 @@ class ExerciceType extends AbstractType
                     ])
                 ]
             ]);
+
+        // Add the data transformer to the 'nom' field
+        $builder->get('nom')
+            ->addModelTransformer(new CallbackTransformer(
+                function ($nomFromDatabase) {
+                    // Transform the string (if needed) when reading from the database
+                    // We don't need to do anything special here if it's already a string
+                    return $nomFromDatabase;
+                },
+                function ($nomFromForm) {
+                    // Transform the submitted value to an empty string if it's null
+                    return $nomFromForm === null ? '' : $nomFromForm;
+                }
+            ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
